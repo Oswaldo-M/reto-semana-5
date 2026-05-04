@@ -1,5 +1,5 @@
 import sys 
-
+import argparse
 
 #Checa si un valor es nulo
 def es_valor_nulo(valor):
@@ -65,7 +65,7 @@ def inferir_tipo(valores):
     else:
         return "texto"
     
-
+#Genera el perfil de una columna 
 def perfilar_columna(nombre,valores):
     
     total = len(valores)
@@ -104,5 +104,97 @@ def perfilar_columna(nombre,valores):
         "ejemplo_valor": ejemplo
     }
 
+def leer_csv(ruta):
+    with open(ruta, 'r',encoding='utf-8') as r:
+        lineas = r.readlines()
+
+    if not lineas:
+        return [], []
+    
+    encabezados = lineas[0].strip().split(',')
+
+    filas = []
+
+    for linea in lineas[1:]:
+        linea = linea.strip()
+        if linea != "":
+            partes = linea.split(',')
+            filas.append(partes)
+    return encabezados, filas
 
 
+def escribir_csv(ruta, perfiles):
+    """Escribe el CSV de perfiles."""
+    columnas = [
+        "nombre_columna", "tipo_inferido", "total_registros",
+        "valores_nulos", "porcentaje_nulos", "valores_unicos",
+        "porcentaje_unicos", "ejemplo_valor"
+    ]
+    
+    with open(ruta, 'w', encoding='utf-8') as f:
+        f.write(','.join(columnas) + '\\n')
+        
+        for p in perfiles:
+            valores = [
+                str(p["nombre_columna"]),
+                str(p["tipo_inferido"]),
+                str(p["total_registros"]),
+                str(p["valores_nulos"]),
+                f"{p['porcentaje_nulos']:.2f}",
+                str(p["valores_unicos"]),
+                f"{p['porcentaje_unicos']:.2f}",
+                str(p["ejemplo_valor"])
+            ]
+            f.write(','.join(valores) + '\\n')
+
+def main():
+    # Parsear argumentos
+    parser = argparse.ArgumentParser(
+        description="Perfilador de Datasets CSV"
+    )
+    parser.add_argument("--input", "-i", required=True, 
+                        help="Ruta al CSV de entrada")
+    parser.add_argument("--output", "-o", required=True,
+                        help="Ruta al CSV de salida")
+    
+    args = parser.parse_args()
+    
+    print(f"Perfilando: {args.input}")
+    
+    # Leer CSV
+    try:
+        encabezados, filas = leer_csv(args.input)
+    except FileNotFoundError:
+        print(f"Error: No se encontro el archivo {args.input}")
+        sys.exit(1)
+    
+    if not encabezados:
+        print("Error: El archivo esta vacio")
+        sys.exit(1)
+    
+    print(f"Columnas encontradas: {len(encabezados)}")
+    print(f"Registros: {len(filas)}")
+    
+   # Perfilar cada columna
+    perfiles = []
+
+    for i in range(len(encabezados)):
+        nombre_columna = encabezados[i]
+        valores = []
+
+    for fila in filas:
+        if i < len(fila):
+            valores.append(fila[i])
+        else:
+            valores.append("")
+    perfil = perfilar_columna(nombre_columna, valores)
+    perfiles.append(perfil)
+    
+    # Escribir resultado
+    escribir_csv(args.output, perfiles)
+    print(f"Perfil guardado en: {args.output}")
+    print("Completado!")
+
+
+if __name__ == "__main__":
+    main()
