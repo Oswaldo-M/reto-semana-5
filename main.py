@@ -72,18 +72,18 @@ def perfilar_columna(nombre,valores):
     nulos = 0
 
     for valor in valores:
-        if es_valor_nulo(valores):
+        if es_valor_nulo(valor):
             nulos+=1
 
     valores_no_nulos = []
 
     for valor in valores:
-        if not es_valor_nulo:
+        if not es_valor_nulo(valor):
             valores_no_nulos.append(valor)
     
     unicos = len(set(valores_no_nulos))
 
-    if len(valores_no_nulos>0):
+    if len(valores_no_nulos)>0:
         ejemplo = valores_no_nulos[0]
     else:
         ejemplo= ""
@@ -182,13 +182,13 @@ def main():
         nombre_columna = encabezados[i]
         valores = []
 
-    for fila in filas:
-        if i < len(fila):
-            valores.append(fila[i])
-        else:
-            valores.append("")
-    perfil = perfilar_columna(nombre_columna, valores)
-    perfiles.append(perfil)
+        for fila in filas:
+            if i < len(fila):
+                valores.append(fila[i])
+            else:
+                valores.append("")
+        perfil = perfilar_columna(nombre_columna, valores)
+        perfiles.append(perfil)
     
     # Escribir resultado
     escribir_csv(args.output, perfiles)
