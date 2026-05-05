@@ -132,7 +132,7 @@ def escribir_csv(ruta, perfiles):
     ]
     
     with open(ruta, 'w', encoding='utf-8') as f:
-        f.write(','.join(columnas) + '\\n')
+        f.write(','.join(columnas) + '\n')
         
         for p in perfiles:
             valores = [
@@ -145,7 +145,7 @@ def escribir_csv(ruta, perfiles):
                 f"{p['porcentaje_unicos']:.2f}",
                 str(p["ejemplo_valor"])
             ]
-            f.write(','.join(valores) + '\\n')
+            f.write(','.join(valores) + '\n')
 
 def main():
     # Parsear argumentos
